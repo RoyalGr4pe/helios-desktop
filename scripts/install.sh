@@ -16,14 +16,16 @@ DESKTOP_FILE="${APPLICATIONS_DIR}/${APP_ID}.desktop"
 AUTOSTART_FILE="${AUTOSTART_DIR}/${APP_ID}.desktop"
 BIN_PATH="${BIN_DIR}/${BIN_NAME}"
 NO_AUTOSTART=0
+LAUNCH_AFTER_INSTALL=0
 
 usage() {
-  printf '%s\n' "Usage: scripts/install.sh [--no-autostart] [APPIMAGE_OR_URL_OR_UNPACKED_DIR]"
+  printf '%s\n' "Usage: scripts/install.sh [--no-autostart] [--launch] [APPIMAGE_OR_URL_OR_UNPACKED_DIR]"
   printf '%s\n' ""
   printf '%s\n' "Examples:"
   printf '%s\n' "  scripts/install.sh"
   printf '%s\n' "  scripts/install.sh release/helios-desktop-1.0.0.AppImage"
   printf '%s\n' "  scripts/install.sh https://example.com/helios-desktop.AppImage"
+  printf '%s\n' "  scripts/install.sh --launch --no-autostart"
 }
 
 while [ "$#" -gt 0 ]; do
@@ -34,6 +36,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --no-autostart)
       NO_AUTOSTART=1
+      shift
+      ;;
+    --launch)
+      LAUNCH_AFTER_INSTALL=1
       shift
       ;;
     *)
@@ -184,3 +190,8 @@ printf '%s\n' "${APP_NAME} installed."
 printf '%s\n' "Run it with: ${BIN_PATH}"
 printf '%s\n' "Desktop entry: ${DESKTOP_FILE}"
 printf '%s\n' "Uninstall with: ${PROJECT_ROOT}/scripts/uninstall.sh"
+
+if [ "$LAUNCH_AFTER_INSTALL" -eq 1 ]; then
+  nohup "$BIN_PATH" >/dev/null 2>&1 &
+  printf '%s\n' "Launching ${APP_NAME}..."
+fi

@@ -30,19 +30,13 @@ npm run uninstall:linux
 Download and install the latest AppImage directly from GitHub:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash -s -- https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage
-```
-
-Or with an environment variable:
-
-```bash
-HELIOS_DOWNLOAD_URL=https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash -s -- --launch https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage
 ```
 
 Disable autostart during install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash -s -- --no-autostart https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage
+curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash -s -- --launch --no-autostart https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage
 ```
 
 ## Package For Release
