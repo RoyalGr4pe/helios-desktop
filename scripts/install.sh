@@ -43,8 +43,9 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$(dirname "${0}")}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SCRIPT_SOURCE="${BASH_SOURCE[0]:-${0:-}}"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" 2>/dev/null && pwd)" || SCRIPT_DIR=""
+PROJECT_ROOT="${HELIOS_PROJECT_ROOT:-${SCRIPT_DIR:-.}/..}"
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "${TMP_DIR}"' EXIT
 
