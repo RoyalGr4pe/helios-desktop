@@ -25,24 +25,24 @@ Uninstall:
 npm run uninstall:linux
 ```
 
-## Install From A Published AppImage
+## Install From GitHub Release
 
-Publish the AppImage from `release/`, then users can install with:
+Download and install the latest AppImage directly from GitHub:
 
 ```bash
-curl -fsSL https://example.com/install.sh | bash -s -- https://example.com/helios-desktop-1.0.0.AppImage
+curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash -s -- https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage
 ```
 
 Or with an environment variable:
 
 ```bash
-curl -fsSL https://example.com/install.sh | HELIOS_DOWNLOAD_URL=https://example.com/helios-desktop-1.0.0.AppImage bash
+HELIOS_DOWNLOAD_URL=https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash
 ```
 
 Disable autostart during install:
 
 ```bash
-scripts/install.sh --no-autostart
+curl -fsSL https://raw.githubusercontent.com/RoyalGr4pe/helios-desktop/main/scripts/install.sh | bash -s -- --no-autostart https://github.com/RoyalGr4pe/helios-desktop/releases/latest/download/helios-desktop-1.0.0.AppImage
 ```
 
 ## Package For Release
