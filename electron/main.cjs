@@ -67,20 +67,35 @@ X-GNOME-Autostart-enabled=true
 }
 
 function createWindow() {
+  const displays = screen.getAllDisplays();
   const primary = screen.getPrimaryDisplay();
-  const { workArea } = primary;
+  
+  console.error('[Helios] All displays:', JSON.stringify(displays.map(d => ({ id: d.id, label: d.label, bounds: d.bounds })), null, 2));
+  console.error('[Helios] Primary display:', JSON.stringify({ id: primary.id, label: primary.label, bounds: primary.bounds }));
+  
+  let targetDisplay = primary;
+  const displayName = process.env.HELIOS_DISPLAY;
+  
+  if (displayName) {
+    console.error('[Helios] Looking for display:', displayName);
+    targetDisplay = displays.find(d => d.label.includes(displayName) || d.id.toString() === displayName) || primary;
+    console.error('[Helios] Matched display:', JSON.stringify({ id: targetDisplay.id, label: targetDisplay.label, bounds: targetDisplay.bounds }));
+  }
+  
+  const { workArea, bounds } = targetDisplay;
+  console.error('[Helios] Using bounds:', JSON.stringify(bounds));
 
   mainWindow = new BrowserWindow({
-    width: workArea.width,
-    height: workArea.height,
-    x: workArea.x,
-    y: workArea.y,
+    width: bounds.width,
+    height: bounds.height,
+    x: bounds.x,
+    y: bounds.y,
     frame: false,
     transparent: true,
     backgroundColor: '#00000000',
     hasShadow: false,
     resizable: false,
-    movable: false,
+    movable: true,
     minimizable: false,
     maximizable: false,
     skipTaskbar: true,
@@ -91,6 +106,10 @@ function createWindow() {
       contextIsolation: true,
     },
   });
+
+  console.error('[Helios] Window created, calling setPosition to', bounds.x, bounds.y);
+  mainWindow.setPosition(bounds.x, bounds.y);
+  console.error('[Helios] Window position after setPosition:', mainWindow.getPosition());
 
   const filePath = isDev 
     ? 'http://localhost:5173' 

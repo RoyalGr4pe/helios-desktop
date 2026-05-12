@@ -103,11 +103,15 @@ install_appimage() {
   cp "$source_file" "$appimage_path"
   chmod +x "$appimage_path"
 
-  cat > "$BIN_PATH" <<EOF
+  cat > "$BIN_PATH" <<'BINEOF'
 #!/usr/bin/env bash
 export HELIOS_LAUNCH_COMMAND="${BIN_PATH}"
-exec "${appimage_path}" --no-sandbox "\$@"
-EOF
+DISPLAY_ARG=""
+if [ -n "$HELIOS_DISPLAY" ]; then
+  DISPLAY_ARG="--display=$HELIOS_DISPLAY"
+fi
+exec "${appimage_path}" --ozone-platform=x11 --no-sandbox $DISPLAY_ARG "$@"
+BINEOF
 }
 
 mkdir -p "$INSTALL_ROOT" "$BIN_DIR" "$APPLICATIONS_DIR" "$AUTOSTART_DIR"
