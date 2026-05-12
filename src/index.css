@@ -279,6 +279,57 @@ select {
   color: var(--widget-text);
 }
 
+.calendar-nav-label {
+  color: var(--widget-text);
+  font-size: clamp(0.7rem, min(4cqw, 7cqh), 1rem);
+  font-weight: 500;
+  min-width: max-content;
+  padding: 0 min(1cqw, 1cqh);
+}
+
+.calendar-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: min(0.5cqw, 0.6cqh);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.calendar-month-header {
+  color: var(--widget-muted-text);
+  font-size: clamp(0.5rem, min(3cqw, 5.5cqh), 0.8rem);
+  text-align: center;
+  font-weight: 500;
+}
+
+.calendar-month-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: min(1cqw, 1cqh);
+  min-width: 0;
+  min-height: 0;
+  gap: 2px;
+}
+
+.calendar-month-day.is-today {
+  background: var(--widget-today);
+}
+
+.calendar-month-day.other-month {
+  opacity: 0.35;
+}
+
+.calendar-day-view {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: min(1cqw, 1cqh);
+}
+
 .event-list,
 .task-list,
 .agent-list {

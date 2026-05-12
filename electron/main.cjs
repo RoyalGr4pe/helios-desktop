@@ -3,6 +3,11 @@ const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
 
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('no-sandbox');
+app.commandLine.appendSwitch('ozone-platform', 'x11');
+
 let mainWindow = null;
 let mcpProcess = null;
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
@@ -100,6 +105,7 @@ function createWindow() {
     maximizable: false,
     skipTaskbar: true,
     alwaysOnTop: false,
+    focusable: false,
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
@@ -107,9 +113,7 @@ function createWindow() {
     },
   });
 
-  console.error('[Helios] Window created, calling setPosition to', bounds.x, bounds.y);
   mainWindow.setPosition(bounds.x, bounds.y);
-  console.error('[Helios] Window position after setPosition:', mainWindow.getPosition());
 
   const filePath = isDev 
     ? 'http://localhost:5173' 
@@ -123,6 +127,7 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
+    mainWindow.setFocusable(false);
   });
 
   mainWindow.on('closed', () => mainWindow = null);

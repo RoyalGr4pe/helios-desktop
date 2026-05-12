@@ -80,6 +80,7 @@ interface AppState {
   weatherUseCurrentLocation: boolean;
   calendarApiKey: string;
   calendarIcsUrl: string;
+  calendarViewMode: 'day' | 'week' | 'month';
   tasks: Task[];
   agentTasks: AgentTask[];
   agentTasksEnabled: boolean;
@@ -100,6 +101,7 @@ interface AppState {
   setWeatherUseCurrentLocation: (enabled: boolean) => void;
   setCalendarApiKey: (key: string) => void;
   setCalendarIcsUrl: (url: string) => void;
+  setCalendarViewMode: (mode: 'day' | 'week' | 'month') => void;
   setWeather: (weather: WeatherData | null) => void;
   setAgentTasks: (tasks: AgentTask[]) => void;
   setAgentTasksEnabled: (enabled: boolean) => void;
@@ -133,6 +135,7 @@ export const useAppStore = create<AppState>()(
       weatherUseCurrentLocation: false,
       calendarApiKey: '',
       calendarIcsUrl: '',
+      calendarViewMode: 'week',
       tasks: [],
       agentTasks: [],
       agentTasksEnabled: false,
@@ -153,6 +156,7 @@ export const useAppStore = create<AppState>()(
       setWeatherUseCurrentLocation: (enabled) => set({ weatherUseCurrentLocation: enabled }),
       setCalendarApiKey: (key) => set({ calendarApiKey: key }),
       setCalendarIcsUrl: (url) => set({ calendarIcsUrl: url }),
+      setCalendarViewMode: (mode) => set({ calendarViewMode: mode }),
       setWeather: (weather) => set({ weather }),
       setAgentTasks: (agentTasks) => set((state) => ({
         agentTasks,
