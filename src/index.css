@@ -1,0 +1,400 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+:root {
+  color-scheme: dark light;
+  --panel-rgb: 18 24 38;
+  --panel-border: rgba(255, 255, 255, 0.16);
+  --panel-inset: rgba(255, 255, 255, 0.12);
+  --panel-shadow-rgb: 0 0 0;
+  --widget-text: rgba(255, 255, 255, 0.94);
+  --widget-muted-text: rgba(255, 255, 255, 0.56);
+  --widget-surface: rgba(255, 255, 255, 0.06);
+  --widget-control: rgba(255, 255, 255, 0.12);
+  --widget-control-active: rgba(255, 255, 255, 0.18);
+  --widget-field: rgba(255, 255, 255, 0.1);
+  --widget-field-border: rgba(255, 255, 255, 0.12);
+  --widget-today: rgba(255, 255, 255, 0.18);
+  --widget-edit-outline: rgba(255, 255, 255, 0.24);
+  --widget-placeholder: rgba(255, 255, 255, 0.12);
+  --widget-scroll: rgba(255, 255, 255, 0.22);
+  --widget-danger: #f87171;
+  --widget-complete-text: rgba(255, 255, 255, 0.4);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --panel-rgb: 255 255 255;
+    --panel-border: rgba(15, 23, 42, 0.16);
+    --panel-inset: rgba(255, 255, 255, 0.72);
+    --panel-shadow-rgb: 15 23 42;
+    --widget-text: rgba(15, 23, 42, 0.94);
+    --widget-muted-text: rgba(51, 65, 85, 0.68);
+    --widget-surface: rgba(15, 23, 42, 0.06);
+    --widget-control: rgba(15, 23, 42, 0.08);
+    --widget-control-active: rgba(15, 23, 42, 0.13);
+    --widget-field: rgba(15, 23, 42, 0.06);
+    --widget-field-border: rgba(15, 23, 42, 0.12);
+    --widget-today: rgba(15, 23, 42, 0.1);
+    --widget-edit-outline: rgba(15, 23, 42, 0.24);
+    --widget-placeholder: rgba(15, 23, 42, 0.12);
+    --widget-scroll: rgba(15, 23, 42, 0.22);
+    --widget-danger: #dc2626;
+    --widget-complete-text: rgba(51, 65, 85, 0.45);
+  }
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.helios-root {
+  width: 100vw;
+  height: 100vh;
+  padding: 40px;
+  background: transparent;
+}
+
+.helios-grid-frame {
+  width: 100%;
+  height: 100%;
+}
+
+.glass-panel,
+.glass-panel-dark {
+  background: rgb(var(--panel-rgb) / var(--widget-opacity, 0.36));
+  backdrop-filter: blur(22px) saturate(130%);
+  -webkit-backdrop-filter: blur(22px) saturate(130%);
+  border: 1px solid var(--panel-border);
+  border-radius: 22px;
+  box-shadow:
+    0 18px 50px rgb(var(--panel-shadow-rgb) / var(--widget-shadow-opacity, 0.18)),
+    inset 0 1px 0 var(--panel-inset);
+}
+
+.glass-panel {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: min(4cqw, 5cqh);
+  container-type: size;
+}
+
+.glass-panel-dark {
+  background: rgba(7, 10, 18, 0.86);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  position: absolute !important;
+  transition: transform 180ms ease, width 180ms ease, height 180ms ease;
+}
+
+.react-grid-item.react-draggable-dragging,
+.react-grid-item.resizing {
+  transition: none;
+  z-index: 20;
+}
+
+.react-grid-item > .widget-cell {
+  width: 100%;
+  height: 100%;
+}
+
+.react-grid-placeholder {
+  background: var(--widget-placeholder) !important;
+  border-radius: 22px;
+}
+
+.layout-editing .glass-panel {
+  outline: 1px dashed var(--widget-edit-outline);
+  cursor: move;
+}
+
+.layout-locked .react-resizable-handle {
+  display: none;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  border-color: var(--widget-muted-text) !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--widget-scroll);
+  border-radius: 999px;
+}
+
+.widget-title {
+  color: var(--widget-text);
+  font-size: clamp(0.85rem, min(7cqw, 13cqh), 1.5rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.widget-muted {
+  color: var(--widget-muted-text);
+  font-size: clamp(0.7rem, min(4cqw, 7cqh), 1rem);
+  line-height: 1.15;
+}
+
+.clock-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.clock-time {
+  color: var(--widget-text);
+  font-size: clamp(2.2rem, min(28cqw, 56cqh), 6rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  text-shadow: 0 8px 28px rgba(255, 255, 255, 0.18);
+}
+
+.clock-date {
+  color: var(--widget-muted-text);
+  font-size: clamp(0.8rem, min(5.5cqw, 11cqh), 1.35rem);
+  font-weight: 500;
+  line-height: 1.1;
+  margin-top: min(2cqw, 3cqh);
+}
+
+.weather-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: min(4cqw, 5cqh);
+}
+
+.weather-temp {
+  color: var(--widget-text);
+  font-size: clamp(2rem, min(25cqw, 50cqh), 5rem);
+  font-weight: 300;
+  line-height: 0.9;
+}
+
+.weather-meta {
+  color: var(--widget-muted-text);
+  font-size: clamp(0.7rem, min(5cqw, 10cqh), 1.1rem);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weather-icon {
+  font-size: clamp(2rem, min(25cqw, 52cqh), 5rem);
+  line-height: 1;
+}
+
+.calendar-panel,
+.tasks-panel,
+.agent-panel {
+  display: flex;
+  flex-direction: column;
+  gap: min(2cqw, 2.5cqh);
+}
+
+.calendar-header,
+.tasks-header,
+.agent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: min(1cqw, 1.2cqh);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: min(2cqw, 2cqh);
+  min-width: 0;
+}
+
+.calendar-day.is-today {
+  background: var(--widget-today);
+}
+
+.calendar-day-label {
+  color: var(--widget-muted-text);
+  font-size: clamp(0.55rem, min(3.5cqw, 7cqh), 0.95rem);
+  line-height: 1;
+}
+
+.calendar-day-number {
+  color: var(--widget-text);
+  font-size: clamp(0.8rem, min(5cqw, 9cqh), 1.4rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.calendar-day.is-today .calendar-day-number {
+  color: var(--widget-text);
+}
+
+.event-list,
+.task-list,
+.agent-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.event-row,
+.task-row,
+.agent-row {
+  display: flex;
+  align-items: center;
+  gap: min(2cqw, 2cqh);
+  padding: min(1.8cqw, 2cqh);
+  border-radius: min(2cqw, 2cqh);
+  background: var(--widget-surface);
+  color: var(--widget-text);
+  font-size: clamp(0.75rem, min(4.5cqw, 8.5cqh), 1.1rem);
+  line-height: 1.1;
+  margin-bottom: min(1cqw, 1cqh);
+}
+
+.agent-row {
+  display: block;
+}
+
+.tasks-form {
+  display: flex;
+  gap: min(1.5cqw, 1.8cqh);
+  flex: 0 0 auto;
+}
+
+.tasks-input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: min(2cqw, 2cqh);
+  border-color: var(--widget-field-border);
+  background: var(--widget-field);
+  color: var(--widget-text);
+  padding: min(1.5cqw, 1.8cqh) min(2cqw, 2.2cqh);
+  font-size: clamp(0.75rem, min(4.5cqw, 8cqh), 1rem);
+  outline: none;
+}
+
+.tasks-add,
+.panel-button {
+  border-radius: min(2cqw, 2cqh);
+  background: var(--widget-control);
+  color: var(--widget-text);
+  padding: min(1.5cqw, 1.8cqh) min(2.4cqw, 2.6cqh);
+  font-size: clamp(0.8rem, min(4.8cqw, 8.5cqh), 1.15rem);
+}
+
+.tasks-filter {
+  display: flex;
+  gap: min(1cqw, 1cqh);
+  flex: 0 0 auto;
+}
+
+.tasks-filter button {
+  border-radius: min(1.5cqw, 1.5cqh);
+  color: var(--widget-muted-text);
+  padding: min(0.8cqw, 1cqh) min(1.5cqw, 1.8cqh);
+  font-size: clamp(0.65rem, min(3.7cqw, 6.8cqh), 0.9rem);
+}
+
+.tasks-filter button.active {
+  background: var(--widget-control-active);
+  color: var(--widget-text);
+}
+
+.task-checkbox {
+  width: min(5cqw, 8cqh);
+  height: min(5cqw, 8cqh);
+  border: 1px solid var(--widget-muted-text);
+  border-radius: 30%;
+  flex: 0 0 auto;
+}
+
+.task-checkbox.done {
+  background: rgba(34, 197, 94, 0.48);
+  border-color: rgba(34, 197, 94, 0.48);
+}
+
+.task-delete {
+  color: var(--widget-muted-text);
+  flex: 0 0 auto;
+  font-size: clamp(0.85rem, min(5cqw, 8cqh), 1.2rem);
+  line-height: 1;
+}
+
+.task-delete:hover {
+  color: var(--widget-danger);
+}
+
+.task-text.completed {
+  color: var(--widget-complete-text);
+  text-decoration: line-through;
+}
+
+.task-text,
+.agent-title,
+.event-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-badge {
+  flex: 0 0 auto;
+  border-radius: min(1.5cqw, 1.5cqh);
+  color: white;
+  padding: min(0.8cqw, 1cqh) min(1.5cqw, 1.8cqh);
+  font-size: clamp(0.65rem, min(3.5cqw, 6.5cqh), 0.9rem);
+  line-height: 1;
+}

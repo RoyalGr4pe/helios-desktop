@@ -1,0 +1,148 @@
+const { app, BrowserWindow, ipcMain, screen, session } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const { spawn } = require('child_process');
+
+let mainWindow = null;
+let mcpProcess = null;
+const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+const MCP_PORT = Number(process.env.HELIOS_MCP_PORT) || 3847;
+
+async function isMcpRunning() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 500);
+
+  try {
+    const response = await fetch(`http://localhost:${MCP_PORT}/health`, { signal: controller.signal });
+    if (!response.ok) return false;
+    const body = await response.json().catch(() => null);
+    return body?.server === 'helios-mcp';
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function startMcpServer() {
+  if (await isMcpRunning()) return;
+
+  const serverPath = path.join(__dirname, '../mcp/server.cjs');
+  const taskStoreFile = path.join(app.getPath('userData'), 'agent-tasks.json');
+  fs.mkdirSync(path.dirname(taskStoreFile), { recursive: true });
+
+  mcpProcess = spawn(process.execPath, [serverPath], {
+    env: {
+      ...process.env,
+      ELECTRON_RUN_AS_NODE: '1',
+      HELIOS_MCP_PORT: String(MCP_PORT),
+      HELIOS_TASK_STORE_FILE: taskStoreFile,
+    },
+    stdio: isDev ? 'inherit' : 'ignore',
+  });
+
+  mcpProcess.on('exit', () => {
+    mcpProcess = null;
+  });
+}
+
+function setupAutoStart() {
+  if (isDev || process.platform !== 'linux') return;
+
+  const autostartDir = path.join(app.getPath('home'), '.config', 'autostart');
+  const desktopFile = path.join(autostartDir, 'helios-desktop.desktop');
+  const execPath = process.execPath.replace(/"/g, '\\"');
+  const execCommand = process.env.HELIOS_LAUNCH_COMMAND || `"${execPath}" --no-sandbox`;
+
+  fs.mkdirSync(autostartDir, { recursive: true });
+  fs.writeFileSync(desktopFile, `[Desktop Entry]
+Type=Application
+Name=Helios Desktop
+Comment=Desktop widgets for clock, weather, calendar and tasks
+Exec=${execCommand}
+Terminal=false
+Hidden=false
+X-GNOME-Autostart-enabled=true
+`);
+}
+
+function createWindow() {
+  const primary = screen.getPrimaryDisplay();
+  const { workArea } = primary;
+
+  mainWindow = new BrowserWindow({
+    width: workArea.width,
+    height: workArea.height,
+    x: workArea.x,
+    y: workArea.y,
+    frame: false,
+    transparent: true,
+    backgroundColor: '#00000000',
+    hasShadow: false,
+    resizable: false,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    skipTaskbar: true,
+    alwaysOnTop: false,
+    show: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.cjs'),
+      contextIsolation: true,
+    },
+  });
+
+  const filePath = isDev 
+    ? 'http://localhost:5173' 
+    : path.join(__dirname, '../dist/index.html');
+
+  if (isDev) {
+    mainWindow.loadURL(filePath);
+  } else {
+    mainWindow.loadFile(filePath);
+  }
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
+
+  mainWindow.on('closed', () => mainWindow = null);
+}
+
+app.whenReady().then(async () => {
+  session.defaultSession.setPermissionRequestHandler((_webContents, permission, callback) => {
+    callback(permission === 'geolocation');
+  });
+
+  await startMcpServer();
+  createWindow();
+  setupAutoStart();
+});
+app.on('before-quit', () => {
+  if (mcpProcess && !mcpProcess.killed) mcpProcess.kill();
+});
+app.on('window-all-closed', () => app.quit());
+app.on('activate', () => { if (!mainWindow) createWindow(); });
+
+ipcMain.on('window-minimize', () => mainWindow?.hide());
+ipcMain.on('window-close', () => mainWindow?.hide());
+ipcMain.on('toggle-click-through', (_event, enabled) => {
+  mainWindow?.setIgnoreMouseEvents(enabled, { forward: true });
+});
+ipcMain.handle('get-platform', () => process.platform);
+ipcMain.handle('http-get', async (_event, url) => {
+  try {
+    const response = await fetch(url);
+    return {
+      ok: response.ok,
+      status: response.status,
+      body: await response.text(),
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      status: 0,
+      body: JSON.stringify({ message: err instanceof Error ? err.message : 'Network request failed' }),
+    };
+  }
+});
