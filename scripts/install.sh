@@ -98,19 +98,20 @@ install_appimage() {
   source_file="$1"
   appimage_path="${INSTALL_ROOT}/helios-desktop.AppImage"
 
+  APPIMAGE_PATH="${INSTALL_ROOT}/helios-desktop.AppImage"
   rm -rf "${INSTALL_ROOT}/app"
   mkdir -p "$INSTALL_ROOT"
-  cp "$source_file" "$appimage_path"
-  chmod +x "$appimage_path"
+  cp "$source_file" "$APPIMAGE_PATH"
+  chmod +x "$APPIMAGE_PATH"
 
   cat > "$BIN_PATH" <<'BINEOF'
 #!/usr/bin/env bash
-export HELIOS_LAUNCH_COMMAND="${BIN_PATH}"
+export HELIOS_LAUNCH_COMMAND="${HOME}/.local/share/helios-desktop/helios-desktop.AppImage"
 DISPLAY_ARG=""
 if [ -n "$HELIOS_DISPLAY" ]; then
   DISPLAY_ARG="--display=$HELIOS_DISPLAY"
 fi
-exec "${appimage_path}" --ozone-platform=x11 --no-sandbox $DISPLAY_ARG "$@"
+exec "${HOME}/.local/share/helios-desktop/helios-desktop.AppImage" --ozone-platform=x11 --no-sandbox $DISPLAY_ARG "$@"
 BINEOF
 }
 
